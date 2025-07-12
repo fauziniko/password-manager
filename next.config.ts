@@ -12,9 +12,6 @@ const nextConfig: NextConfig = {
     ]
   },
   
-  // Optimization for production
-  swcMinify: true,
-  
   // Ensure proper output for deployment
   output: 'standalone',
   
@@ -27,6 +24,14 @@ const nextConfig: NextConfig = {
   // Image optimization (if needed later)
   images: {
     domains: [],
+  },
+  
+  // TypeScript and ESLint configuration
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    ignoreDuringBuilds: false,
   },
 };
 

@@ -179,7 +179,7 @@ yarn db:test
 # Check database status
 node check-status.js
 ```
-### Setup Database Schema
+### Step 3: Setup Database Schema
 
 ```bash
 # Generate Prisma client
@@ -192,7 +192,16 @@ npx prisma db push
 yarn db:seed
 ```
 
-### Start Development Server
+### Step 4: Test Build (Important!)
+
+```bash
+# Test build to ensure no errors
+yarn build
+
+# If build succeeds, you're ready for deployment!
+```
+
+### Step 5: Start Development Server
 
 ```bash
 yarn dev
