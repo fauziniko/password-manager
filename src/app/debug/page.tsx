@@ -93,9 +93,9 @@ export default function AuthDebug() {
       <div className="mt-6 bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
         <h2 className="text-lg font-semibold mb-2">Troubleshooting Guide</h2>
         <ul className="list-disc list-inside space-y-1 text-sm">
-          <li>If status is 'loading' for too long: Check environment variables</li>
-          <li>If status is 'unauthenticated' after Google login: Check callback URL in Google Console</li>
-          <li>If authenticated but can't access dashboard: Check middleware configuration</li>
+          <li>If status is &apos;loading&apos; for too long: Check environment variables</li>
+          <li>If status is &apos;unauthenticated&apos; after Google login: Check callback URL in Google Console</li>
+          <li>If authenticated but can&apos;t access dashboard: Check middleware configuration</li>
           <li>If API test fails: Check API route protection</li>
         </ul>
       </div>
