@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -25,7 +25,12 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleOAuthEnabled, setIsGoogleOAuthEnabled] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    setIsGoogleOAuthEnabled(process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 'true')
+  }, [])
 
   const {
     register,
@@ -224,7 +229,7 @@ export default function SignUpPage() {
           </div>
 
           {/* Google OAuth Button */}
-          {process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 'true' && (
+          {isGoogleOAuthEnabled && (
             <>
               <div className="flex items-center justify-center">
                 <div className="border-t border-gray-300 flex-1"></div>
