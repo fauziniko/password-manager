@@ -46,9 +46,10 @@ export default function AuthDebug() {
           <p><strong>Authenticated:</strong> {session ? 'Yes' : 'No'}</p>
           {session && (
             <div className="mt-2">
-              <p><strong>User ID:</strong> {session.user?.id}</p>
+              <p><strong>User ID:</strong> {(session.user as { id?: string })?.id || "N/A"}</p>
               <p><strong>Email:</strong> {session.user?.email}</p>
               <p><strong>Name:</strong> {session.user?.name}</p>
+              <p><strong>Image:</strong> {session.user?.image || "N/A"}</p>
             </div>
           )}
         </div>

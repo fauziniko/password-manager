@@ -391,13 +391,28 @@ The application can also be deployed to:
 - TypeScript errors
 - Missing dependencies
 - Environment variable references
+- ESLint errors
 
 **Solutions:**
 
 - Fix TypeScript errors: `npm run type-check`
 - Install missing dependencies: `npm install`
 - Check all environment variables are defined
+- Fix ESLint errors: `npm run lint`
 - Review build logs for specific errors
+
+#### 6. ESLint Errors During Build
+
+**Common Error:**
+```
+Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+```
+
+**Solutions:**
+- Replace single quotes `'` with `&apos;` in JSX text
+- Use double quotes for attributes: `className="text"`
+- Escape special characters in JSX content
+- Consider disabling ESLint rule if needed: `// eslint-disable-next-line react/no-unescaped-entities`
 
 ### Debugging Steps
 
