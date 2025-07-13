@@ -289,13 +289,21 @@ NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=true
 3. **Set environment variables** in Vercel dashboard:
 
    ```env
+   # Required for all deployments
    DATABASE_URL=your-production-database-url
    NEXTAUTH_URL=https://your-project-name.vercel.app
    NEXTAUTH_SECRET=your-generated-secret
-   GOOGLE_CLIENT_ID=your-google-client-id
+   
+   # Required for Google OAuth
+   GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
    GOOGLE_CLIENT_SECRET=your-google-client-secret
    NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=true
    ```
+
+   **⚠️ Important:** 
+   - `NEXTAUTH_URL` must match your exact production domain
+   - All values must be set (no empty strings)
+   - Use the same `NEXTAUTH_SECRET` consistently
 
 4. **Update Google OAuth redirect URIs** to include production URL:
    ```
@@ -314,10 +322,30 @@ The application can also be deployed to:
 
 ### Important Notes for Deployment
 
+- **Environment Variables**: The `.env.production` file is used during build time. For actual deployment, set environment variables in your deployment platform's dashboard.
 - **Tailwind CSS**: Project uses Tailwind CSS v3 (compatible with Docker/Nixpacks)
 - **Build**: Always test `npm run build` locally before deployment
-- **Environment**: Ensure all required environment variables are set
+- **Google OAuth**: Update redirect URIs in Google Console for production domain
 - **Database**: Use `sslmode=require` for production databases
+
+### Production Environment Setup
+
+**Do NOT put real credentials in `.env.production` file.** This file is for build-time placeholder values only. Set actual production values in your deployment platform:
+
+**Coolify/Docker Deployment:**
+1. Set environment variables in Coolify dashboard
+2. Ensure `NEXTAUTH_URL` matches your actual domain
+3. Add production domain to Google OAuth settings
+
+**Example production environment variables:**
+```env
+DATABASE_URL=postgresql://user:pass@host:5432/db?sslmode=require
+NEXTAUTH_URL=https://your-actual-domain.com
+NEXTAUTH_SECRET=your-strong-secret-key
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=true
+```
 
 ## 🔧 Troubleshooting
 
@@ -414,6 +442,81 @@ Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/n
 - Escape special characters in JSX content
 - Consider disabling ESLint rule if needed: `// eslint-disable-next-line react/no-unescaped-entities`
 
+#### 7. Production Deployment Issues
+
+**React Error #130 (Minified React Error):**
+
+This typically occurs when there's a mismatch between development and production configurations.
+
+**Common Causes:**
+- Environment variables not properly set in deployment platform
+- Missing or incorrect Google OAuth credentials
+- Invalid `NEXTAUTH_URL` for production domain
+- Client-side hydration mismatches
+
+**Solutions:**
+
+1. **Set Production Environment Variables Correctly:**
+   ```env
+   # In your deployment platform (Vercel, Netlify, etc.)
+   DATABASE_URL=your-actual-production-database-url
+   NEXTAUTH_URL=https://your-actual-domain.com
+   NEXTAUTH_SECRET=your-actual-production-secret
+   GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+   NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=true
+   ```
+
+2. **Update Google OAuth Settings:**
+   - Add your production domain to authorized origins
+   - Add production callback URL: `https://your-domain.com/api/auth/callback/google`
+   - Ensure OAuth consent screen is configured for external users
+
+3. **Test Production Build Locally:**
+   ```bash
+   npm run build
+   npm start
+   ```
+
+4. **Clear Browser Cache and Cookies** after deployment
+
+**Google OAuth Not Working in Production:**
+
+**Causes:**
+- Production domain not added to Google OAuth settings
+- Environment variables not set in deployment platform
+- OAuth consent screen not properly configured
+- OAuthAccountNotLinked error (account exists with same email)
+
+**Step-by-Step Fix:**
+
+1. **Update Google Cloud Console:**
+   - Go to Google Cloud Console → APIs & Services → Credentials
+   - Edit your OAuth 2.0 Client ID
+   - Add authorized origins: `https://your-production-domain.com`
+   - Add redirect URIs: `https://your-production-domain.com/api/auth/callback/google`
+
+2. **Set Environment Variables in Deployment Platform:**
+   ```env
+   NEXTAUTH_URL=https://your-production-domain.com
+   GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=your-client-secret
+   NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=true
+   ```
+
+3. **Verify OAuth Consent Screen:**
+   - Ensure it's set to "External" users
+   - Add your domain to authorized domains if required
+   - Publish the app if testing phase is complete
+
+4. **Fix OAuthAccountNotLinked Error:**
+   This error occurs when a user tries to sign in with Google but already has an account with the same email created via email/password. The application is configured to automatically link accounts with `allowDangerousEmailAccountLinking: true`.
+
+5. **Test OAuth Flow:**
+   - Clear browser cache and cookies
+   - Try signing in with Google in incognito mode
+   - Check browser console for specific error messages
+
 ### Debugging Steps
 
 1. **Check Local Build**:
@@ -448,6 +551,42 @@ Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/n
    - Try registering a new account
    - Test login with demo credentials
    - Check session persistence
+
+### Production Deployment Checklist
+
+Before deploying to production, ensure:
+
+**✅ Environment Variables:**
+- [ ] `DATABASE_URL` points to production database
+- [ ] `NEXTAUTH_URL` matches production domain exactly
+- [ ] `NEXTAUTH_SECRET` is a strong, unique value
+- [ ] `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set
+- [ ] `NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=true` if using Google OAuth
+
+**✅ Google OAuth Setup:**
+- [ ] Production domain added to authorized origins
+- [ ] Production callback URL added: `https://your-domain.com/api/auth/callback/google`
+- [ ] OAuth consent screen configured for external users
+- [ ] Test users added during development phase
+
+**✅ Database:**
+- [ ] Production database accessible
+- [ ] SSL connection configured (`sslmode=require`)
+- [ ] Database schema deployed (`npx prisma db push`)
+- [ ] Demo data seeded if needed (`npm run db:seed`)
+
+**✅ Build & Deploy:**
+- [ ] Local build successful (`npm run build`)
+- [ ] No ESLint errors (`npm run lint`)
+- [ ] Environment variables set in deployment platform
+- [ ] Domain DNS configured correctly
+
+**✅ Post-Deployment Testing:**
+- [ ] Application loads without errors
+- [ ] Google OAuth sign-in works
+- [ ] Email/password authentication works
+- [ ] Dashboard and CRUD operations function
+- [ ] No console errors in browser
 
 ## 📝 Available Scripts
 
@@ -558,6 +697,16 @@ curl -X POST http://localhost:3000/api/modems \
 - **Credential Users**: Can change passwords with current password verification
 - **Mixed Support**: Both types can use the application seamlessly
 - **Smart UI**: Different interfaces based on user type
+- **Account Linking**: Users can sign in with both email/password and Google OAuth using the same email address
+
+### Account Linking Behavior
+
+The application supports automatic account linking:
+
+1. **Create account with email/password** → Later sign in with Google using same email ✅
+2. **Create account with Google OAuth** → Later sign in with email/password using same email ✅
+3. **Mixed authentication methods** work seamlessly for the same user
+4. **No duplicate accounts** are created for the same email address
 
 ## 📄 License
 

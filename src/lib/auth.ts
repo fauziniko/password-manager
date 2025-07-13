@@ -12,6 +12,7 @@ export const authOptions: any = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
     }),
     // Credentials Provider
     CredentialsProvider({
@@ -57,6 +58,10 @@ export const authOptions: any = {
     signIn: '/auth/signin'
   },
   callbacks: {
+    async signIn() {
+      // Allow all sign ins - the allowDangerousEmailAccountLinking option handles OAuth linking
+      return true
+    },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async redirect({ url, baseUrl }: any) {
       // Redirect to dashboard after successful authentication

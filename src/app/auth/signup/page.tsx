@@ -111,6 +111,7 @@ export default function SignUpPage() {
                 </div>
                 <input
                   {...register('name')}
+                  id="name"
                   type="text"
                   autoComplete="name"
                   required
@@ -133,6 +134,7 @@ export default function SignUpPage() {
                 </div>
                 <input
                   {...register('email')}
+                  id="email"
                   type="email"
                   autoComplete="email"
                   required
@@ -155,6 +157,7 @@ export default function SignUpPage() {
                 </div>
                 <input
                   {...register('password')}
+                  id="password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="new-password"
                   required
@@ -188,6 +191,7 @@ export default function SignUpPage() {
                 </div>
                 <input
                   {...register('confirmPassword')}
+                  id="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   autoComplete="new-password"
                   required

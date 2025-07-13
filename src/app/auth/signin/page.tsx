@@ -98,6 +98,7 @@ export default function SignInPage() {
                 </div>
                 <input
                   {...register('email')}
+                  id="email"
                   type="email"
                   autoComplete="email"
                   required
@@ -120,6 +121,7 @@ export default function SignInPage() {
                 </div>
                 <input
                   {...register('password')}
+                  id="password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   required
