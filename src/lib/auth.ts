@@ -58,6 +58,22 @@ export const authOptions: any = {
   },
   callbacks: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async redirect({ url, baseUrl }: any) {
+      // Redirect to dashboard after successful authentication
+      if (url.startsWith('/auth/signin') || url.startsWith('/auth/signup')) {
+        return `${baseUrl}/dashboard`
+      }
+      // Allow relative callback URLs
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`
+      }
+      // Allow callback URLs on the same origin
+      if (new URL(url).origin === baseUrl) {
+        return url
+      }
+      return `${baseUrl}/dashboard`
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async jwt({ token, user }: any) {
       if (user) {
         token.id = user.id
