@@ -1,10 +1,19 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
+import GoogleProvider from 'next-auth/providers/google'
+import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const authOptions: any = {
+  adapter: PrismaAdapter(prisma),
   providers: [
+    // Google OAuth Provider
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    // Credentials Provider
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -20,7 +29,7 @@ export const authOptions: any = {
           where: { email: credentials.email }
         })
 
-        if (!user) {
+        if (!user || !user.password) {
           return null
         }
 

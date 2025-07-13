@@ -60,3 +60,45 @@ export async function PUT(request: NextRequest) {
     )
   }
 }
+
+// GET - Get user profile
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions) as Session | null
+    
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    })
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    // Return user info with hasPassword flag instead of actual password
+    return NextResponse.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      hasPassword: !!user.password,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    })
+  } catch {
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}

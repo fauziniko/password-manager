@@ -31,6 +31,7 @@ export default function ProfilePage() {
   const router = useRouter()
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
+  const [isOAuthUser, setIsOAuthUser] = useState(false)
 
   const {
     register: registerProfile,
@@ -58,6 +59,21 @@ export default function ProfilePage() {
     } else if (session?.user) {
       setProfileValue('name', session.user.name || '')
       setProfileValue('email', session.user.email || '')
+      
+      // Check if user is OAuth user by checking accounts
+      const checkOAuthUser = async () => {
+        try {
+          const response = await fetch('/api/user/profile')
+          if (response.ok) {
+            const userData = await response.json()
+            // If user has no password, they're likely an OAuth user
+            setIsOAuthUser(!userData.hasPassword)
+          }
+        } catch (error) {
+          console.error('Failed to check user type:', error)
+        }
+      }
+      checkOAuthUser()
     }
   }, [status, session, router, setProfileValue])
 
@@ -210,7 +226,26 @@ export default function ProfilePage() {
                 <h2 className="text-lg font-medium text-gray-900">Change Password</h2>
               </div>
               
-              <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-4">
+              {isOAuthUser ? (
+                <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <Shield className="h-5 w-5 text-blue-400" />
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-blue-800">
+                        OAuth Account
+                      </h3>
+                      <div className="mt-2 text-sm text-blue-700">
+                        <p>
+                          You signed in with Google. Password changes are managed through your Google account.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Current Password</label>
                   <input
@@ -262,7 +297,8 @@ export default function ProfilePage() {
                     {isUpdatingPassword ? 'Updating...' : 'Change Password'}
                   </button>
                 </div>
-              </form>
+                </form>
+              )}
             </div>
           </div>
 
