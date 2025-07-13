@@ -343,233 +343,35 @@ DATABASE_URL="postgresql://postgres.[project-id]:[password]@aws-0-[region].poole
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
+### Deployment Ready!
 
-1. **Push to GitHub**:
-   ```bash
-   git add .
-   git commit -m "Initial commit"
-   git push origin main
-   ```
+**Note:** This project has been updated to resolve Docker/Nixpacks deployment issues by downgrading from Tailwind CSS v4 to v3.
 
-2. **Deploy to Vercel**:
-   - Connect your GitHub repo to Vercel
-   - Add environment variables in Vercel dashboard
-   - Deploy automatically
+### Deployment Platforms
 
-3. **Environment variables for production**:
-   ```env
-   DATABASE_URL=your-production-database-url
-   NEXTAUTH_URL=https://your-domain.vercel.app
-   NEXTAUTH_SECRET=your-production-secret
-   ```
+- **Vercel** (Recommended for Next.js)
+- **Railway** (With PostgreSQL addon)
+- **Render** (Static + database)
+- **Docker/Nixpacks** compatible
 
-### Other Platforms
+### Environment Variables Required
 
-The application is also compatible with:
-- Netlify
-- Railway
-- DigitalOcean App Platform
-- AWS Amplify
-
-### Production Database
-
-For production, consider these PostgreSQL providers:
-- **Neon** (Recommended for Vercel)
-- **Supabase** (Full-stack platform)
-- **PlanetScale** (Serverless MySQL alternative)
-- **Railway** (Simple deployment)
-
-## 🔒 Security Considerations
-
-### Current Security Features
-- ✅ Password hashing with bcryptjs
-- ✅ Input validation with Zod schemas
-- ✅ SQL injection prevention via Prisma ORM
-- ✅ CSRF protection via NextAuth.js
-- ✅ Environment variable protection
-- ✅ Type safety with TypeScript
-
-### Production Security Checklist
-- [ ] Use strong `NEXTAUTH_SECRET` (32+ characters)
-- [ ] Enable database SSL in production
-- [ ] Use HTTPS for all endpoints
-- [ ] Set up proper CORS headers
-- [ ] Enable rate limiting for API routes
-- [ ] Monitor for unusual activity
-- [ ] Regular security updates for dependencies
-
-## 📊 Project Status
-
-- **Database**: ✅ PostgreSQL Cloud Connected
-- **Authentication**: ✅ NextAuth.js configured
-- **UI/UX**: ✅ Responsive design with Tailwind
-- **API**: ✅ RESTful endpoints with validation
-- **TypeScript**: ✅ Full type safety
-- **Testing**: ✅ Manual testing with demo data
-
-## 📋 Available Scripts
-
-- `yarn dev` - Start development server (with Turbopack)
-- `yarn build` - Build for production
-- `yarn start` - Start production server
-- `yarn lint` - Run ESLint
-- `yarn db:seed` - Seed database with sample data
-- `yarn db:test` - Test database connection
-- `yarn db:generate` - Generate Prisma client
-- `yarn db:migrate` - Create and run migration
-- `yarn db:reset` - Reset database (destructive)
-
-## 🔧 Troubleshooting
-
-### Database Connection Issues
-
-If you encounter database connection problems:
-
-1. **Test connection**:
-   ```bash
-   yarn db:test
-   ```
-
-2. **Check database status**:
-   ```bash
-   node check-status.js
-   ```
-
-3. **Verify environment variables**:
-   ```bash
-   # Check if .env file exists and has correct values
-   cat .env
-   ```
-
-4. **Common fixes**:
-   ```bash
-   # Regenerate Prisma client
-   npx prisma generate
-   
-   # Push schema again
-   npx prisma db push
-   
-   # Reset and reseed (if safe to do so)
-   yarn db:reset
-   yarn db:seed
-   ```
-
-### Deployment Issues
-
-If your deployed app shows Next.js template instead of your app:
-
-1. **Check deployment readiness**:
-   ```bash
-   ./check-deployment.sh
-   ```
-
-2. **Common deployment issues**:
-   - ❌ **Environment variables missing**: Add all required env vars in platform dashboard
-   - ❌ **Wrong NEXTAUTH_URL**: Must match your deployed domain
-   - ❌ **Build errors**: Test locally with `yarn build` first
-   - ❌ **Database not accessible**: Check if cloud DB allows external connections
-
-3. **Fix deployment environment**:
-   ```env
-   # For Vercel deployment
-   DATABASE_URL=postgresql://postgres:passwordmanager@158.140.191.175:5432/postgres?sslmode=require&connect_timeout=10
-   NEXTAUTH_URL=https://your-app-name.vercel.app
-   NEXTAUTH_SECRET=your-strong-secret-here
-   ```
-
-4. **Test build locally before deploying**:
-   ```bash
-   yarn build
-   yarn start
-   # Visit http://localhost:3000 to verify
-   ```
-
-### Build Issues
-
-1. **Clear Next.js cache**:
-   ```bash
-   rm -rf .next
-   yarn dev
-   ```
-
-2. **Reinstall dependencies**:
-   ```bash
-   rm -rf node_modules yarn.lock
-   yarn install
-   ```
-
-3. **Check TypeScript errors**:
-   ```bash
-   yarn type-check
-   ```
-
-### Authentication Issues
-
-1. **Generate new NextAuth secret**:
-   ```bash
-   openssl rand -base64 32
-   ```
-   Then update `NEXTAUTH_SECRET` in `.env`
-
-2. **Clear browser data** and try logging in again
-
-3. **Verify NextAuth configuration**:
-   - Check `src/lib/auth.ts` configuration
-   - Ensure database connection is working
-   - Verify NEXTAUTH_URL matches your domain
-
-## 🔧 Configuration
-
-### Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `DATABASE_URL` | Database connection string | Yes |
-| `DIRECT_URL` | Direct database connection (Supabase) | Production |
-| `NEXTAUTH_URL` | Application URL | Yes |
-| `NEXTAUTH_SECRET` | JWT signing secret | Yes |
-
-### Prisma Commands
+Set these in your deployment platform:
 
 ```bash
-# Generate client
-npx prisma generate
-
-# Create migration
-npx prisma migrate dev --name migration-name
-
-# Deploy migrations
-npx prisma migrate deploy
-
-# Reset database
-npx prisma migrate reset
-
-# View database
-npx prisma studio
+DATABASE_URL=postgresql://username:password@host:port/database
+NEXTAUTH_SECRET=your-generated-secret-key
+NEXTAUTH_URL=https://your-domain.com
+GOOGLE_CLIENT_ID=optional-for-oauth
+GOOGLE_CLIENT_SECRET=optional-for-oauth
+NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=false
 ```
 
-## 🤝 Contributing
+### Deployment Issues & Solutions
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Commit changes: `git commit -am 'Add feature'`
-4. Push to branch: `git push origin feature-name`
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🔒 Security
-
-- All passwords are hashed using bcryptjs
-- Input validation with Zod schemas
-- Protected API routes with authentication checks
-- CSRF protection via NextAuth.js
-- SQL injection prevention via Prisma ORM
-
-## 📞 Support
-
-For support and questions, please open an issue in the GitHub repository.
-# password-manager
+If you encounter deployment issues, check `DEPLOYMENT_TROUBLESHOOTING.md` for:
+- Tailwind CSS native module errors (solved)
+- Environment variable setup
+- Database connection problems
+- Build memory issues
+````

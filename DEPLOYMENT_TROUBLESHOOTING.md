@@ -211,3 +211,184 @@ If the problem persists:
 3. **Making sure database is accessible from deployment platform**
 
 Double-check these three things first!
+
+# Deployment Troubleshooting Guide
+
+## Common Deployment Issues and Solutions
+
+### Issue 1: Tailwind CSS v4 Native Module Error (SOLVED)
+
+**Error Message:**
+```
+Cannot find module '../lightningcss.linux-x64-gnu.node'
+Error: Cannot find module '../lightningcss.linux-x64-gnu.node'
+```
+
+**Root Cause:**
+Tailwind CSS v4 uses a native binary (`lightningcss`) that is not compatible with Docker/Nixpacks container environments.
+
+**Solution:**
+Downgrade to Tailwind CSS v3 which doesn't have native dependencies:
+
+```bash
+# Remove Tailwind CSS v4 and related packages
+npm uninstall tailwindcss @tailwindcss/postcss @tailwindcss/node
+
+# Install Tailwind CSS v3 with required dependencies
+npm install --save-dev tailwindcss@^3 postcss autoprefixer
+
+# Remove any duplicate PostCSS config files
+rm -f postcss.config.js
+
+# Update postcss.config.mjs
+cat > postcss.config.mjs << 'EOF'
+const config = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+
+export default config;
+EOF
+
+# Update tailwind.config.js (remove comments, clean format)
+cat > tailwind.config.js << 'EOF'
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+      },
+    },
+  },
+  plugins: [],
+  darkMode: 'media',
+}
+EOF
+
+# Test the build
+npm run build
+```
+
+**Status:** ✅ SOLVED - Downgraded to Tailwind CSS v3
+
+### Issue 2: Missing Environment Variables
+
+**Error Message:**
+```
+Error: Environment variable [VARIABLE_NAME] is not defined
+```
+
+**Solution:**
+1. Check that all required environment variables are set in your deployment platform
+2. For Vercel: Set in dashboard or use `vercel env pull`
+3. For Railway/Render: Set in environment variables section
+
+**Required Variables:**
+- `DATABASE_URL`
+- `NEXTAUTH_SECRET`
+- `NEXTAUTH_URL`
+- `GOOGLE_CLIENT_ID` (optional)
+- `GOOGLE_CLIENT_SECRET` (optional)
+
+### Issue 3: Database Connection Issues
+
+**Error Message:**
+```
+Error: Cannot connect to database
+```
+
+**Solution:**
+1. Verify DATABASE_URL format and credentials
+2. Check if database allows connections from deployment platform
+3. For cloud databases, ensure SSL is properly configured
+4. Test connection locally first
+
+### Issue 4: Next.js Build Memory Issues
+
+**Error Message:**
+```
+FATAL ERROR: Ineffective mark-compacts near heap limit
+```
+
+**Solution:**
+Add to package.json scripts:
+```json
+{
+  "scripts": {
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' next build"
+  }
+}
+```
+
+## Deployment Platform Specific
+
+### Vercel
+- Automatically detects Next.js projects
+- Set environment variables in dashboard
+- Use Node.js 18+ runtime
+
+### Railway
+- Add `nixpacks.toml` for custom configuration
+- Set `NODE_VERSION` environment variable
+- Configure database service separately
+
+### Render
+- Use Node.js build command: `npm run build`
+- Start command: `npm start`
+- Set environment variables in dashboard
+
+## Build Verification Commands
+
+```bash
+# Clean build test
+npm run clean
+npm install
+npm run build
+npm start
+
+# Type checking
+npm run type-check
+
+# Database connection test
+npm run db:test
+
+# Check package versions
+npm list tailwindcss
+npm list next
+npm list prisma
+```
+
+## Emergency Rollback
+
+If deployment fails, quickly rollback:
+
+```bash
+# Revert to last known working commit
+git log --oneline -5
+git reset --hard [WORKING_COMMIT_HASH]
+git push -f origin main
+```
+
+## Getting Help
+
+1. Check deployment platform logs
+2. Test build locally first
+3. Verify all environment variables
+4. Check database connectivity
+5. Review this troubleshooting guide
+
+## Status
+
+- ✅ Tailwind CSS v4 → v3 downgrade (native module fix)
+- ✅ Development server working
+- 🔄 Production build testing
+- ⏳ Deployment platform testing pending

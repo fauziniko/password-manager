@@ -12,8 +12,8 @@ const nextConfig: NextConfig = {
     ]
   },
   
-  // Ensure proper output for deployment
-  output: 'standalone',
+  // Remove standalone output for better compatibility
+  // output: 'standalone',
   
   // Environment variable validation
   env: {
