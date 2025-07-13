@@ -586,7 +586,6 @@ For database issues:
 
 Your Password Manager Dashboard is fully functional and ready for:
 
-- ✅ **Local Development**: Run with `yarn dev`
 - ✅ **Local Development**: Run with `npm run dev`
 - ✅ **Production Deployment**: Deploy to any platform
 - ✅ **User Testing**: Complete authentication flows
